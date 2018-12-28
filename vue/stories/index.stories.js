@@ -6,15 +6,22 @@ import { linkTo } from '@storybook/addon-links';
 import store from '../src/store'
 
 storiesOf('TheBusMonitor', module)
-  .add('Default status', () => {
-    store.commit('loadDefault')
+  .add('default status', () => {
+    store.commit('loadDefaultSetting')
     return {
       store,
       template: '<TheBusMonitor />'
     }
   })
-  .add('"Return" direction', () => {
+  .add('"return" direction', () => {
     store.commit('setBusDirection', 'RETURN')
+    return {
+      store,
+      template: '<TheBusMonitor />'
+    }
+  })
+  .add('subscribe real data', () => {
+    store.dispatch('subscribeBus')
     return {
       store,
       template: '<TheBusMonitor />'

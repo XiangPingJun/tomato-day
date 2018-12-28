@@ -14,6 +14,10 @@
           <input type="radio" v-model="busDirection" value="RETURN">
           <i class="form-icon"></i> Return
         </label>
+        <div v-if="loading" class="loading loading-lg"></div>
+        <h2 v-else-if="busMessage">{{busMessage}}</h2>
+        <h2 v-else-if="busErrorMessage" class="text-error">{{busErrorMessage}}</h2>
+        <h2 v-else class="text-error">Should not reach here</h2>
       </div>
     </div>
     <div class="card-footer"></div>
@@ -23,6 +27,21 @@
 <script>
 export default {
   computed: {
+    loading() {
+      return null === this.$store.state.busTime
+    },
+    busMessage() {
+      if (isNaN(this.$store.state.busTime))
+        return false
+      else if (0 === this.$store.state.busTime)
+        return 'Arriving';
+      else
+        return this.$store.state.busTime + ' minute(s)';
+    },
+    busErrorMessage() {
+      if (this.$store.state.busTime instanceof Error)
+        return this.$store.state.busTime.message
+    },
     busDirection: {
       get() {
         return this.$store.state.busDirection;
