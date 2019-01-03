@@ -1,11 +1,6 @@
 <template>
   <div>
-    <BusInfo
-      :direction="bus.direction"
-      :errorMessage="bus.errorMessage"
-      :arriveIn="bus.arriveIn"
-      :setBusDirection="saveBusDirection"
-    />
+    <BusInfo :bus="bus" @onDirectionChange="saveBusDirection"/>
   </div>
 </template>
 

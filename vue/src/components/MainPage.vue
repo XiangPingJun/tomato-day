@@ -2,7 +2,7 @@
   <div class="container" style="margin-top:5px;">
     <div class="columns">
       <div class="column col-6">
-        <BusInfoContainer/>
+        <bus-info-container/>
       </div>
       <div class="column col-6"></div>
     </div>

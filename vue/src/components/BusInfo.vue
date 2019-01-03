@@ -7,16 +7,16 @@
     <div class="card-body">
       <div class="form-group">
         <label class="form-radio form-inline">
-          <input type="radio" v-model="busDirection" value="DEAPRTURE">
+          <input type="radio" v-model="directionModel" value="DEAPRTURE">
           <i class="form-icon"></i> Deaprture
         </label>
         <label class="form-radio form-inline">
-          <input type="radio" v-model="busDirection" value="RETURN">
+          <input type="radio" v-model="directionModel" value="RETURN">
           <i class="form-icon"></i> Return
         </label>
         <div v-if="loading" class="loading loading"></div>
-        <h2 v-if="arriveIn">{{arriveIn}} minute(s).</h2>
-        <h2 v-if="errorMessage" class="text-error">{{errorMessage}}</h2>
+        <h2 v-if="!isNaN(bus.arriveIn)">{{bus.arriveIn}} minute(s).</h2>
+        <h2 v-if="bus.errorMessage" class="text-error">{{bus.errorMessage}}</h2>
       </div>
     </div>
     <div class="card-footer"></div>
@@ -24,26 +24,17 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex';
-
 export default {
-  props: {
-    direction: {
-      required: true,
-      validator: value => 'DEAPRTURE' === value || 'RETURN' === value
-    },
-    arriveIn: {},
-    errorMessage: {},
-    setBusDirection: { default: () => () => { } }
-  },
+  name: 'BusInfo',
+  props: ['bus'],
   data() {
     return {
-      busDirection: this.direction,
+      directionModel: this.bus.direction,
     };
   },
   computed: {
     loading() {
-      return undefined === this.arriveIn && undefined === this.errorMessage;
+      return undefined === this.bus.arriveIn && undefined === this.bus.errorMessage;
     },
     arrivingAt() {
       if (isNaN(this.arriveIn)) {
@@ -54,8 +45,8 @@ export default {
     },
   },
   watch: {
-    busDirection(value, oldValue) {
-      this.setBusDirection(value);
+    directionModel(value, oldValue) {
+      this.$emit('onDirectionChange', value);
     },
   },
 };

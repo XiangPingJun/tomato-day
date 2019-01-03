@@ -51,7 +51,7 @@ export default new Vuex.Store<State>({
       clearInterval(state.bus.intervalID);
       Vue.delete(state.bus, 'intervalID');
       dispatch('loadBusTime');
-      const id = setInterval(() => dispatch('getBusTime'), 60 * 1000);
+      const id = setInterval(() => dispatch('loadBusTime'), 60 * 1000);
       commit('setBusIntervalID', id);
     },
     async loadBusTime({ state, commit }) {
@@ -76,15 +76,14 @@ export default new Vuex.Store<State>({
         const predictionTime = data[0].stopInfo.find((info: any) => targetBusStop === info.name).predictionTime;
         let match = /(\d+)時/.exec(predictionTime);
         if (match instanceof Array) {
-          arriveIn += parseInt(match[1]) * 60
+          arriveIn += parseInt(match[1], 10) * 60;
         }
         match = /(\d+)分/.exec(predictionTime);
         if (match instanceof Array) {
-          arriveIn += parseInt(match[1])
+          arriveIn += parseInt(match[1], 10);
         } else {
           throw new Error('Unable to parse predictionTime: ' + predictionTime);
         }
-        console.log(arriveIn)
         commit('setBusArriveIn', arriveIn);
       } catch (e) {
         commit('setBusErrorMessage', e.message);
