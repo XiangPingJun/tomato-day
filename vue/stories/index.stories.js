@@ -5,27 +5,30 @@ import { action } from '@storybook/addon-actions';
 import { linkTo } from '@storybook/addon-links';
 import store from '../src/store'
 
-storiesOf('TheBusMonitor', module)
-  .add('default status', () => {
-    store.commit('loadDefaultSetting')
+storiesOf('MainPage', module)
+  .add('entry', () => {
     return {
       store,
-      template: '<TheBusMonitor />'
+      template: '<MainPage />'
     }
   })
-  .add('"return" direction', () => {
-    store.commit('setBusDirection', 'RETURN')
+storiesOf('BusInfo', module)
+  .add('deaprture direction', () => {
+    return { template: '<BusInfo direction="DEAPRTURE" />' }
+  })
+  .add('return direction', () => {
+    return { template: '<BusInfo direction="RETURN" />' }
+  })
+  .add('arrive in 10 minutes', () => {
     return {
-      store,
-      template: '<TheBusMonitor />'
+      template: '<BusInfo arriveIn="10" direction="DEAPRTURE" />'
     }
   })
-  .add('subscribe real data', () => {
-    store.dispatch('subscribeBus')
+  .add('error message', () => {
     return {
-      store,
-      template: '<TheBusMonitor />'
+      template: '<BusInfo errorMessage="Unable to get bus info!" direction="DEAPRTURE" />'
     }
   })
+
 
 /* eslint-enable react/react-in-jsx-scope */

@@ -1,8 +1,10 @@
 import { configure } from '@storybook/vue';
 import Vue from 'vue'
-import TheBusMonitor from '../src/components/TheBusMonitor.vue'
+import MainPage from '../src/components/MainPage.vue'
+import BusInfo from '../src/components/BusInfo.vue'
 
-Vue.component('TheBusMonitor', TheBusMonitor);
+Vue.component('MainPage', MainPage);
+Vue.component('BusInfo', BusInfo);
 
 // automatically import all files ending in *.stories.js
 const req = require.context('../stories', true, /.stories.js$/);
