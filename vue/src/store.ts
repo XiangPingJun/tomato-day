@@ -9,17 +9,34 @@ interface BusState {
   errorMessage?: string;
   intervalID?: number;
 }
-
+interface NotificationState {
+  types: Array<'PAGE_TITLE' | 'WEB_NOTIFICATIONS'>;
+  intervalID?: number;
+}
 interface State {
   bus: BusState;
+  notification: NotificationState;
 }
 
-export default new Vuex.Store<State>({
-  state: {
+function getInitState(): State {
+  const state: State = {
     bus: {
-      direction: localStorage.busDirection || 'DEAPRTURE',
+      direction: 'DEAPRTURE',
     },
-  },
+    notification: {
+      types: ['PAGE_TITLE', 'WEB_NOTIFICATIONS'],
+    },
+  };
+  if (undefined !== localStorage.busDirection) {
+    state.bus.direction = localStorage.busDirection;
+  }
+  if (undefined !== localStorage.notifyType) {
+    state.notification.types = JSON.parse(localStorage.notifyType);
+  }
+  return state;
+}
+export default new Vuex.Store<State>({
+  state: getInitState(),
   mutations: {
     setBusDirection(state: State, payload): void {
       Vue.delete(state.bus, 'arriveIn');
@@ -38,9 +55,36 @@ export default new Vuex.Store<State>({
     setBusIntervalID(state: State, payload): void {
       Vue.set(state.bus, 'intervalID', payload);
     },
+    setNotifyType(state: State, payload): void {
+      Vue.set(state.notification, 'type', payload);
+      localStorage.notifyType = JSON.stringify(payload);
+    },
+    setNotifyTypeIntervalID(state: State, payload): void {
+      Vue.set(state.notification, 'intervalID', payload);
+    },
   },
   actions: {
-    saveBusDirection({ state, dispatch }, payload): void {
+    async notify({ state, commit }, payload) {
+      if (state.notification.types.includes('PAGE_TITLE')) {
+        let blinkIn: boolean = false;
+        const id = setInterval(() => {
+          const link: any = document.querySelector('link[rel*="icon"]') || document.createElement('link');
+          if (blinkIn) {
+            link.href = '/favicon.ico';
+          } else {
+            link.href = '/blank.ico';
+          }
+          blinkIn = !blinkIn;
+        }, 500);
+        commit('setNotifyTypeIntervalID', id);
+      }
+      if (state.notification.types.includes('WEB_NOTIFICATIONS')) {
+        await Notification.requestPermission();
+        const notification = new Notification(payload);
+        setTimeout(() => notification.close(), 1500);
+      }
+    },
+    saveBusDirection({ state, dispatch }, payload) {
       Vue.delete(state.bus, 'arriveIn');
       Vue.delete(state.bus, 'errorMessage');
       Vue.set(state.bus, 'direction', payload);
@@ -54,7 +98,7 @@ export default new Vuex.Store<State>({
       const id = setInterval(() => dispatch('loadBusTime'), 60 * 1000);
       commit('setBusIntervalID', id);
     },
-    async loadBusTime({ state, commit }) {
+    async loadBusTime({ state, dispatch, commit }) {
       try {
         let targetBusStop: string = '';
         let url;
@@ -81,12 +125,16 @@ export default new Vuex.Store<State>({
         match = /(\d+)分/.exec(predictionTime);
         if (match instanceof Array) {
           arriveIn += parseInt(match[1], 10);
-        } else {
+        } else if ('進站中' !== predictionTime && '即將進站' !== predictionTime) {
           throw new Error('Unable to parse predictionTime: ' + predictionTime);
+        }
+        if (12 >= arriveIn) {
+          dispatch('notify', arriveIn);
         }
         commit('setBusArriveIn', arriveIn);
       } catch (e) {
         commit('setBusErrorMessage', e.message);
+        dispatch('notify', e.message);
       }
     },
   },

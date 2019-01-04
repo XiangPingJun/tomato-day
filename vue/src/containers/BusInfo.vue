@@ -1,11 +1,11 @@
 <template>
   <div>
-    <BusInfo :bus="bus" @onDirectionChange="saveBusDirection"/>
+    <bus-info :bus="bus" @onDirectionChange="saveBusDirection"/>
   </div>
 </template>
 
 <script>
-import BusInfo from './BusInfo.vue';
+import BusInfo from '../components/BusInfo.vue';
 import { mapActions, mapState, mapMutations } from 'vuex';
 
 export default {

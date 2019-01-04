@@ -4,7 +4,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import MainPage from './components/MainPage.vue';
+import MainPage from './containers/MainPage.vue';
 
 @Component({
   components: {

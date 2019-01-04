@@ -25,8 +25,12 @@
 
 <script>
 export default {
-  name: 'BusInfo',
-  props: ['bus'],
+  props: {
+    bus: {
+      type: Object,
+      required: true,
+    },
+  },
   data() {
     return {
       directionModel: this.bus.direction,
