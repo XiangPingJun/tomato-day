@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <bus-info :bus="bus" @onDirectionChange="saveBusDirection"/>
-  </div>
+  <bus-info :bus="bus" @onDirectionChange="saveBusDirection"/>
 </template>
 
 <script>
