@@ -70,7 +70,7 @@ export default new Vuex.Store<State>({
   actions: {
     showNotify({ commit }, payload): void {
       commit('setNotifyMessage', payload);
-      setTimeout(() => commit('setNotifyMessage', undefined))
+      setTimeout(() => commit('setNotifyMessage', undefined));
     },
     saveBusDirection({ state, dispatch }, payload) {
       Vue.delete(state.bus, 'arriveIn');
