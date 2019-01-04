@@ -116,7 +116,7 @@ export default new Vuex.Store<State>({
         } else if ('進站中' !== predictionTime && '即將進站' !== predictionTime) {
           throw new Error('Unable to parse predictionTime: ' + predictionTime);
         }
-        if (112 >= arriveIn) {
+        if (12 >= arriveIn) {
           dispatch('showNotify', arriveIn);
         }
         commit('setBusArriveIn', arriveIn);
