@@ -92,11 +92,11 @@ export default new Vuex.Store<State>({
         let url;
         if ('DEAPRTURE' === state.bus.direction) {
           url = 'https://cors.io/?http://www.taiwanbus.tw/app_api/SP_PredictionTime_V3.ashx'
-            + '?routeNo=1032&branch=0&goBack=2&Lang=&Source=w&runid=4949';
+            + '?routeNo=1032&branch=0&goBack=1&Lang=&Source=w&runid=4948';
           targetBusStop = '南港車站';
         } else {
           url = 'https://cors.io/?http://www.taiwanbus.tw/app_api/SP_PredictionTime_V3.ashx'
-            + '?routeNo=1032&branch=0&goBack=1&Lang=&Source=w&runid=4948';
+            + '?routeNo=1032&branch=0&goBack=2&Lang=&Source=w&runid=4949';
           targetBusStop = '和平高中';
         }
         const response = await fetch(url);
