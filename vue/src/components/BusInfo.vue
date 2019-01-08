@@ -18,6 +18,7 @@
         <h2 v-if="!isNaN(bus.arriveIn)">{{bus.arriveIn}} minute(s).</h2>
         <h2 v-if="bus.errorMessage" class="text-error">{{bus.errorMessage}}</h2>
       </div>
+      <div v-for="busStop in bus.busStopData">{{busStop.name}} {{busStop.predictionTime}}</div>
     </div>
     <div class="card-footer"></div>
   </div>
@@ -29,7 +30,7 @@ export default {
     bus: {
       type: Object,
       required: true,
-    },
+    }
   },
   data() {
     return {

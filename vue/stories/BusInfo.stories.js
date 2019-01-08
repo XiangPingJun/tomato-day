@@ -3,11 +3,12 @@
 import { storiesOf } from '@storybook/vue';
 import { action } from '@storybook/addon-actions';
 import { linkTo } from '@storybook/addon-links';
-import BusInfo from '../src/components/BusInfo.vue'
+import BusInfo from '../src/components/BusInfo.vue';
+import busDeaprtureMock from './bus.deaprture.mock';
 
 const busInfoBasic = {
   components: { BusInfo },
-  template: '<bus-info :bus="bus" @onDirectionChange="onDirectionChange"/>',
+  template: '<bus-info :bus="bus" :busStopData="busStopData" @onDirectionChange="onDirectionChange"/>',
   methods: {
     onDirectionChange: action('onDirectionChange'),
   }
@@ -35,7 +36,8 @@ storiesOf('BusInfo', module)
       bus: {
         direction: 'DEAPRTURE',
         arriveIn: 10,
-      }
+      },
+      busStopData: busDeaprtureMock,
     }),
   }))
   .add('arrive in 0 minutes', () => ({
@@ -44,7 +46,8 @@ storiesOf('BusInfo', module)
       bus: {
         direction: 'DEAPRTURE',
         arriveIn: 0,
-      }
+      },
+      busStopData: busDeaprtureMock,
     }),
   }))
   .add('error message', () => ({

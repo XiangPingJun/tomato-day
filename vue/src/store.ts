@@ -8,14 +8,14 @@ interface BusState {
   arriveIn?: number;
   errorMessage?: string;
   intervalID?: number;
+  busStopData?: Array<BusStop>;
 }
-interface NotificationState {
-  types: Array<'PAGE_TITLE' | 'WEB_NOTIFICATIONS'>;
-  message?: string;
+interface BusStop {
+  name: string;
+  predictionTime: string;
 }
 interface State {
   bus: BusState;
-  notification: NotificationState;
 }
 
 function getInitState(): State {
@@ -23,15 +23,9 @@ function getInitState(): State {
     bus: {
       direction: 'DEAPRTURE',
     },
-    notification: {
-      types: ['PAGE_TITLE', 'WEB_NOTIFICATIONS'],
-    },
   };
   if (undefined !== localStorage.busDirection) {
     state.bus.direction = localStorage.busDirection;
-  }
-  if (undefined !== localStorage.notifyType) {
-    state.notification.types = JSON.parse(localStorage.notifyType);
   }
   return state;
 }
@@ -55,22 +49,15 @@ export default new Vuex.Store<State>({
     setBusIntervalID(state: State, payload): void {
       Vue.set(state.bus, 'intervalID', payload);
     },
-    setNotifyType(state: State, payload): void {
-      Vue.set(state.notification, 'type', payload);
-      localStorage.notifyType = JSON.stringify(payload);
-    },
-    setNotifyMessage(state: State, payload): void {
-      if (payload) {
-        Vue.set(state.notification, 'message', payload);
-      } else {
-        Vue.delete(state.notification, 'message');
-      }
+    setBusStopData(state: State, payload): void {
+      Vue.set(state.bus, 'busStopData', payload);
     },
   },
   actions: {
-    showNotify({ commit }, payload): void {
-      commit('setNotifyMessage', payload);
-      setTimeout(() => commit('setNotifyMessage', undefined));
+    async showNotify({ }, payload) {
+      await Notification.requestPermission();
+      const notification = new Notification(payload);
+      setTimeout(() => notification.close(), 2000);
     },
     saveBusDirection({ state, dispatch }, payload) {
       Vue.delete(state.bus, 'arriveIn');
@@ -83,10 +70,11 @@ export default new Vuex.Store<State>({
       clearInterval(state.bus.intervalID);
       Vue.delete(state.bus, 'intervalID');
       dispatch('loadBusTime');
-      const id = setInterval(() => dispatch('loadBusTime'), 60 * 1000);
+      const id = setInterval(() => dispatch('loadBusTime'), 120 * 1000);
       commit('setBusIntervalID', id);
     },
     async loadBusTime({ state, commit, dispatch }) {
+      commit('setBusStopData', undefined);
       try {
         let targetBusStop: string = '';
         let url;
@@ -104,6 +92,15 @@ export default new Vuex.Store<State>({
           throw new Error('Unable to get bus info!');
         }
         const data = await response.json();
+        let fromBusStop, toBusStop
+        if ('DEAPRTURE' === state.bus.direction) {
+          [fromBusStop, toBusStop] = [37, 54]
+        } else {
+          [fromBusStop, toBusStop] = [14, 31]
+        }
+        commit('setBusStopData', data[0].stopInfo.slice(fromBusStop, toBusStop).map(
+          (busStop: BusStop) => ({ name: busStop.name, predictionTime: busStop.predictionTime }))
+        );
         let arriveIn = 0;
         const predictionTime = data[0].stopInfo.find((info: any) => targetBusStop === info.name).predictionTime;
         let match = /(\d+)時/.exec(predictionTime);
