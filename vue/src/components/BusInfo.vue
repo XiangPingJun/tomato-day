@@ -21,7 +21,11 @@
         >{{bus.arriveIn}} minute(s).</h2>
         <h2 v-if="bus.errorMessage" class="text-error">{{bus.errorMessage}}</h2>
       </div>
-      <div v-for="busStop in bus.busStopData">{{busStop.name}} {{busStop.predictionTime}}</div>
+      <div v-for="busStop in bus.busStopData">
+        <div
+          :class="{'text-bold':'進站中'==busStop.predictionTime||'即將進站'==busStop.predictionTime}"
+        >{{busStop.name}} {{busStop.predictionTime}}</div>
+      </div>
     </div>
     <div class="card-footer"></div>
   </div>
