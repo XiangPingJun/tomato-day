@@ -15,7 +15,10 @@
           <i class="form-icon"></i> Return
         </label>
         <div v-if="loading" class="loading loading"></div>
-        <h2 v-if="!isNaN(bus.arriveIn)">{{bus.arriveIn}} minute(s).</h2>
+        <h2
+          v-if="!isNaN(bus.arriveIn)"
+          :class="{'text-warning':busArrivingSoon}"
+        >{{bus.arriveIn}} minute(s).</h2>
         <h2 v-if="bus.errorMessage" class="text-error">{{bus.errorMessage}}</h2>
       </div>
       <div v-for="busStop in bus.busStopData">{{busStop.name}} {{busStop.predictionTime}}</div>
@@ -27,10 +30,8 @@
 <script>
 export default {
   props: {
-    bus: {
-      type: Object,
-      required: true,
-    }
+    bus: { type: Object, required: true },
+    busArrivingSoon: { type: Boolean, required: false },
   },
   data() {
     return {

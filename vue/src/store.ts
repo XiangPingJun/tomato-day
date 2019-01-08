@@ -8,7 +8,7 @@ interface BusState {
   arriveIn?: number;
   errorMessage?: string;
   intervalID?: number;
-  busStopData?: Array<BusStop>;
+  busStopData?: BusStop[];
 }
 interface BusStop {
   name: string;
@@ -31,6 +31,11 @@ function getInitState(): State {
 }
 export default new Vuex.Store<State>({
   state: getInitState(),
+  getters: {
+    busArrivingSoon(state: State): boolean {
+      return undefined !== state.bus.arriveIn && 12 >= state.bus.arriveIn;
+    },
+  },
   mutations: {
     setBusDirection(state: State, payload): void {
       Vue.delete(state.bus, 'arriveIn');
@@ -73,7 +78,7 @@ export default new Vuex.Store<State>({
       const id = setInterval(() => dispatch('loadBusTime'), 120 * 1000);
       commit('setBusIntervalID', id);
     },
-    async loadBusTime({ state, commit, dispatch }) {
+    async loadBusTime({ state, getters, commit, dispatch }) {
       commit('setBusStopData', undefined);
       try {
         let targetBusStop: string = '';
@@ -92,14 +97,17 @@ export default new Vuex.Store<State>({
           throw new Error('Unable to get bus info!');
         }
         const data = await response.json();
-        let fromBusStop, toBusStop
+        let fromBusStop;
+        let toBusStop;
         if ('DEAPRTURE' === state.bus.direction) {
-          [fromBusStop, toBusStop] = [37, 54]
+          [fromBusStop, toBusStop] = [37, 54];
         } else {
-          [fromBusStop, toBusStop] = [14, 31]
+          [fromBusStop, toBusStop] = [14, 31];
         }
-        commit('setBusStopData', data[0].stopInfo.slice(fromBusStop, toBusStop).map(
-          (busStop: BusStop) => ({ name: busStop.name, predictionTime: busStop.predictionTime }))
+        commit(
+          'setBusStopData',
+          data[0].stopInfo.slice(fromBusStop, toBusStop)
+            .map((busStop: BusStop) => ({ name: busStop.name, predictionTime: busStop.predictionTime })),
         );
         let arriveIn = 0;
         const predictionTime = data[0].stopInfo.find((info: any) => targetBusStop === info.name).predictionTime;
@@ -113,7 +121,7 @@ export default new Vuex.Store<State>({
         } else if ('進站中' !== predictionTime && '即將進站' !== predictionTime) {
           throw new Error('Unable to parse predictionTime: ' + predictionTime);
         }
-        if (12 >= arriveIn) {
+        if (getters.busArrivingSoon) {
           dispatch('showNotify', arriveIn);
         }
         commit('setBusArriveIn', arriveIn);
