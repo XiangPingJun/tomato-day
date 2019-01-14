@@ -8,6 +8,7 @@ interface BusState {
   arriveIn?: number;
   errorMessage?: string;
   busStopData?: BusStop[];
+  enabled: boolean;
 }
 interface BusStop {
   name: string;
@@ -27,6 +28,7 @@ function getInitState(): State {
   const state: State = {
     bus: {
       direction: 'DEAPRTURE',
+      enabled: false,
     },
     countdown: {
       passed: 0,
@@ -75,6 +77,9 @@ export default new Vuex.Store<State>({
     setBusStopData(state: State, payload): void {
       Vue.set(state.bus, 'busStopData', payload);
     },
+    setBusEnabled(state: State, payload): void {
+      Vue.set(state.bus, 'enabled', payload);
+    },
     setCountdownType(state: State, payload): void {
       Vue.set(state.countdown, 'type', payload);
       Vue.set(state.countdown, 'started', false);
@@ -89,7 +94,11 @@ export default new Vuex.Store<State>({
   actions: {
     init({ state, getters, commit, dispatch }) {
       dispatch('loadBusTime');
-      setInterval(() => dispatch('loadBusTime'), 120 * 1000);
+      setInterval(() => {
+        if (state.bus.enabled) {
+          dispatch('loadBusTime');
+        }
+      }, 120 * 1000);
       let link: any = window.top.document.querySelector("link[rel*='icon']");
       if (!link) {
         link = window.top.document.createElement('link');

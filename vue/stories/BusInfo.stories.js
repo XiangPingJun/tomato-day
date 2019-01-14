@@ -8,9 +8,10 @@ import { deaprtureBus, returnBus } from './busStop.mock';
 
 const busInfoBasic = {
   components: { BusInfo },
-  template: '<bus-info :bus="bus" @onDirectionChange="onDirectionChange"/>',
+  template: '<bus-info :bus="bus" @onDirectionChange="onDirectionChange" @onEnabledChange="onEnabledChange"/>',
   methods: {
     onDirectionChange: action('onDirectionChange'),
+    onEnabledChange: action('onEnabledChange'),
   }
 }
 storiesOf('BusInfo', module)
@@ -19,6 +20,7 @@ storiesOf('BusInfo', module)
     data: () => ({
       bus: {
         direction: 'DEAPRTURE',
+        enabled: false,
       }
     }),
   }))
@@ -27,6 +29,7 @@ storiesOf('BusInfo', module)
     data: () => ({
       bus: {
         direction: 'RETURN',
+        enabled: false,
       }
     }),
   }))
@@ -37,6 +40,7 @@ storiesOf('BusInfo', module)
         direction: 'DEAPRTURE',
         arriveIn: 10,
         busStopData: deaprtureBus,
+        enabled: true,
       },
     }),
   }))
@@ -48,6 +52,7 @@ storiesOf('BusInfo', module)
         direction: 'RETURN',
         arriveIn: 0,
         busStopData: returnBus,
+        enabled: true,
       },
       busArrivingSoon: true,
     }),
@@ -58,6 +63,7 @@ storiesOf('BusInfo', module)
       bus: {
         direction: 'DEAPRTURE',
         errorMessage: 'Unable to get bus info!',
+        enabled: true,
       }
     }),
   }))
