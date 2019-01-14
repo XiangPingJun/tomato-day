@@ -81,6 +81,8 @@ export default new Vuex.Store<State>({
       Vue.set(state.bus, 'busStopData', payload);
     },
     setBusEnabled(state: State, payload): void {
+      Vue.delete(state.bus, 'arriveIn');
+      Vue.delete(state.bus, 'errorMessage');
       Vue.set(state.bus, 'enabled', payload);
     },
     setCountdownType(state: State, payload): void {
