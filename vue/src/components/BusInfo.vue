@@ -25,15 +25,15 @@
             :class="{'text-warning':busArrivingSoon}"
           >{{bus.arriveIn}} minute(s).</h2>
           <h2 v-if="bus.errorMessage" class="text-error">{{bus.errorMessage}}</h2>
+          <div v-for="busStop in bus.busStopData">
+            <div
+              :class="{'text-bold':'進站中'==busStop.predictionTime||'即將進站'==busStop.predictionTime}"
+            >{{busStop.name}} {{busStop.predictionTime}}</div>
+          </div>
         </div>
-        <div v-else>
+        <div v-if="!enabledModel">
           <h2 class="text-gray">(Tracking disabled)</h2>
         </div>
-      </div>
-      <div v-for="busStop in bus.busStopData">
-        <div
-          :class="{'text-bold':'進站中'==busStop.predictionTime||'即將進站'==busStop.predictionTime}"
-        >{{busStop.name}} {{busStop.predictionTime}}</div>
       </div>
     </div>
     <div class="card-footer"></div>
@@ -71,6 +71,12 @@ export default {
     enabledModel(value, oldValue) {
       this.$emit('onEnabledChange', value);
     },
+    bus: {
+      deep: true,
+      handler(value, oldValue) {
+        this.enabledModel = value.enabled;
+      },
+    }
   },
 };
 </script>

@@ -39,6 +39,9 @@ function getInitState(): State {
   if (undefined !== localStorage.busDirection) {
     state.bus.direction = localStorage.busDirection;
   }
+  if ('DEAPRTURE' === state.bus.direction) {
+    state.bus.enabled = true;
+  }
   return state;
 }
 export default new Vuex.Store<State>({
@@ -89,16 +92,17 @@ export default new Vuex.Store<State>({
     },
     controlCountdown(state: State, payload: 'START' | 'STOP'): void {
       Vue.set(state.countdown, 'started', 'START' === payload);
-    }
+    },
   },
   actions: {
     init({ state, getters, commit, dispatch }) {
-      dispatch('loadBusTime');
-      setInterval(() => {
+      const getBusTime = () => {
         if (state.bus.enabled) {
-          dispatch('loadBusTime');
+          dispatch('getBusTime');
         }
-      }, 120 * 1000);
+      }
+      setInterval(getBusTime, 120 * 1000);
+      getBusTime();
       let link: any = window.top.document.querySelector("link[rel*='icon']");
       if (!link) {
         link = window.top.document.createElement('link');
@@ -127,14 +131,20 @@ export default new Vuex.Store<State>({
       const notification = new Notification(payload);
       setTimeout(() => notification.close(), 2000);
     },
-    saveBusDirection({ state, dispatch }, payload) {
+    setBusDirection({ state, dispatch }, payload) {
       Vue.delete(state.bus, 'arriveIn');
       Vue.delete(state.bus, 'errorMessage');
       Vue.set(state.bus, 'direction', payload);
       localStorage.busDirection = payload;
-      dispatch('loadBusTime');
+      dispatch('getBusTime');
     },
-    async loadBusTime({ state, getters, commit, dispatch }) {
+    setBusEnabled({ commit, dispatch }, payload) {
+      if (payload) {
+        dispatch('getBusTime');
+      }
+      commit('setBusEnabled', payload);
+    },
+    async getBusTime({ state, getters, commit, dispatch }) {
       commit('setBusStopData', undefined);
       try {
         let targetBusStop: string = '';
@@ -185,6 +195,6 @@ export default new Vuex.Store<State>({
         commit('setBusErrorMessage', e.message);
         dispatch('showNotify', e.message);
       }
-    }
+    },
   },
 });

@@ -2,7 +2,7 @@
   <bus-info
     :bus="bus"
     :busArrivingSoon="busArrivingSoon"
-    @onDirectionChange="saveBusDirection"
+    @onDirectionChange="setBusDirection"
     @onEnabledChange="setBusEnabled"
   />
 </template>
@@ -14,6 +14,6 @@ import { mapActions, mapState, mapMutations, mapGetters } from 'vuex';
 export default {
   components: { BusInfo },
   computed: { ...mapState(['bus']), ...mapGetters(['busArrivingSoon']) },
-  methods: { ...mapActions(['saveBusDirection']), ...mapMutations(['setBusEnabled']) },
+  methods: { ...mapActions(['setBusDirection', 'setBusEnabled']) },
 };
 </script>

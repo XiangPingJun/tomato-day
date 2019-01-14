@@ -1,5 +1,5 @@
 <template>
-  <div class style="margin-top:5px;">
+  <div class style="margin:5px;">
     <div class="columns">
       <div class="column col-6">
         <bus-info/>
