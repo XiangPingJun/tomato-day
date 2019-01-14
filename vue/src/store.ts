@@ -7,21 +7,31 @@ interface BusState {
   direction: 'DEAPRTURE' | 'RETURN';
   arriveIn?: number;
   errorMessage?: string;
-  intervalID?: number;
   busStopData?: BusStop[];
 }
 interface BusStop {
   name: string;
   predictionTime: string;
 }
+interface CountdownState {
+  type: 'WORK' | 'BREAK';
+  started: boolean;
+  passed: number;
+}
 interface State {
   bus: BusState;
+  countdown: CountdownState;
 }
 
 function getInitState(): State {
   const state: State = {
     bus: {
       direction: 'DEAPRTURE',
+    },
+    countdown: {
+      passed: 0,
+      started: false,
+      type: 'WORK',
     },
   };
   if (undefined !== localStorage.busDirection) {
@@ -34,6 +44,17 @@ export default new Vuex.Store<State>({
   getters: {
     busArrivingSoon(state: State): boolean {
       return undefined !== state.bus.arriveIn && 12 >= state.bus.arriveIn;
+    },
+    countdownWillEndAfter(state: State, getters): string | undefined {
+      const diff: number = getters.countdownTarget - state.countdown.passed;
+      if (0 >= diff) {
+        return undefined;
+      } else {
+        return `${Math.floor(diff / 60).toString().padStart(2, '0')}:${(diff % 60).toString().padStart(2, '0')}`;
+      }
+    },
+    countdownTarget(state: State): number {
+      return 'WORK' === state.countdown.type ? 25 * 60 : 10 * 60;
     },
   },
   mutations: {
@@ -51,14 +72,47 @@ export default new Vuex.Store<State>({
       Vue.delete(state.bus, 'arriveIn');
       Vue.set(state.bus, 'errorMessage', payload);
     },
-    setBusIntervalID(state: State, payload): void {
-      Vue.set(state.bus, 'intervalID', payload);
-    },
     setBusStopData(state: State, payload): void {
       Vue.set(state.bus, 'busStopData', payload);
     },
+    setCountdownType(state: State, payload): void {
+      Vue.set(state.countdown, 'type', payload);
+      Vue.set(state.countdown, 'started', false);
+    },
+    setCountdownPassed(state: State, payload): void {
+      Vue.set(state.countdown, 'passed', payload)
+    },
+    controlCountdown(state: State, payload: 'START' | 'STOP'): void {
+      Vue.set(state.countdown, 'started', 'START' === payload);
+    }
   },
   actions: {
+    init({ state, getters, commit, dispatch }) {
+      dispatch('loadBusTime');
+      setInterval(() => dispatch('loadBusTime'), 120 * 1000);
+      let link: any = window.top.document.querySelector("link[rel*='icon']");
+      if (!link) {
+        link = window.top.document.createElement('link');
+        link.type = 'image/x-icon';
+        link.rel = 'shortcut icon';
+        window.top.document.getElementsByTagName('head')[0].appendChild(link);
+      }
+      setInterval(() => {
+        if (state.countdown.started) {
+          commit('setCountdownPassed', state.countdown.passed + 1);
+          if (state.countdown.passed >= getters.countdownTarget) {
+            dispatch('showNotify', `${state.countdown.type} timer!`);
+            commit('setCountdownPassed', 0);
+            commit('controlCountdown', 'STOP');
+            commit('setCountdownType', 'WORK' === state.countdown.type ? 'BREAK' : 'WORK');
+          }
+          link.href = 'https://favicon-generator.org/favicon-generator/htdocs/favicons/2015-01-13/83c32432b480c0f5dd4a664d73079134.ico';
+          window.top.document.title = getters.countdownWillEndAfter;
+        } else {
+          link.href = 'https://favicon-generator.org/favicon-generator/htdocs/favicons/2015-01-31/f86e790d31405a65eaaf5f4732e14967.ico';
+        }
+      }, 1000);
+    },
     async showNotify({ }, payload) {
       await Notification.requestPermission();
       const notification = new Notification(payload);
@@ -70,13 +124,6 @@ export default new Vuex.Store<State>({
       Vue.set(state.bus, 'direction', payload);
       localStorage.busDirection = payload;
       dispatch('loadBusTime');
-    },
-    subscribeBusTime({ state, commit, dispatch }) {
-      clearInterval(state.bus.intervalID);
-      Vue.delete(state.bus, 'intervalID');
-      dispatch('loadBusTime');
-      const id = setInterval(() => dispatch('loadBusTime'), 120 * 1000);
-      commit('setBusIntervalID', id);
     },
     async loadBusTime({ state, getters, commit, dispatch }) {
       commit('setBusStopData', undefined);
@@ -121,14 +168,14 @@ export default new Vuex.Store<State>({
         } else if ('進站中' !== predictionTime && '即將進站' !== predictionTime) {
           throw new Error('Unable to parse predictionTime: ' + predictionTime);
         }
+        commit('setBusArriveIn', arriveIn);
         if (getters.busArrivingSoon) {
           dispatch('showNotify', arriveIn);
         }
-        commit('setBusArriveIn', arriveIn);
       } catch (e) {
         commit('setBusErrorMessage', e.message);
         dispatch('showNotify', e.message);
       }
-    },
+    }
   },
 });

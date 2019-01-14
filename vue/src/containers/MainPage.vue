@@ -4,16 +4,23 @@
       <div class="column col-6">
         <bus-info/>
       </div>
+      <div class="column col-6">
+        <countdown/>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import BusInfo from './BusInfo';
-import { mapState } from 'vuex';
+import Countdown from './Countdown';
+import { mapActions } from 'vuex';
 
 export default {
-  components: { BusInfo },
-  computed: { ...mapState(['notification']) },
+  components: { BusInfo, Countdown },
+  created() {
+    this.init();
+  },
+  methods: { ...mapActions(['init']) }
 };
 </script>

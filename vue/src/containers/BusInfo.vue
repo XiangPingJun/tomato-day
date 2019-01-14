@@ -8,10 +8,7 @@ import { mapActions, mapState, mapMutations, mapGetters } from 'vuex';
 
 export default {
   components: { BusInfo },
-  created() {
-    this.subscribeBusTime();
-  },
   computed: { ...mapState(['bus']), ...mapGetters(['busArrivingSoon']) },
-  methods: { ...mapActions(['subscribeBusTime', 'saveBusDirection']) },
+  methods: { ...mapActions(['saveBusDirection']) },
 };
 </script>
