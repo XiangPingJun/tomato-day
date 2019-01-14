@@ -4,7 +4,6 @@ import Vuex from 'vuex';
 Vue.use(Vuex);
 
 interface BusState {
-  direction: 'DEAPRTURE' | 'RETURN';
   arriveIn?: number;
   errorMessage?: string;
   busStopData?: BusStop[];
@@ -16,30 +15,31 @@ interface BusStop {
 }
 interface CountdownState {
   type: 'WORK' | 'BREAK';
-  started: boolean;
+  playback: 'START' | 'STOP' | 'PAUSE';
   passed: number;
 }
 interface State {
+  whereAmI: 'OFFICE' | 'HOME';
   bus: BusState;
   countdown: CountdownState;
 }
 
 function getInitState(): State {
   const state: State = {
+    whereAmI: 'OFFICE',
     bus: {
-      direction: 'DEAPRTURE',
       enabled: false,
     },
     countdown: {
       passed: 0,
-      started: false,
+      playback: 'STOP',
       type: 'WORK',
     },
   };
-  if (undefined !== localStorage.busDirection) {
-    state.bus.direction = localStorage.busDirection;
+  if (undefined !== localStorage.whereAmI) {
+    state.whereAmI = localStorage.whereAmI;
   }
-  if ('DEAPRTURE' === state.bus.direction) {
+  if ('HOME' === state.whereAmI) {
     state.bus.enabled = true;
   }
   return state;
@@ -63,11 +63,11 @@ export default new Vuex.Store<State>({
     },
   },
   mutations: {
-    setBusDirection(state: State, payload): void {
+    setWhereAmI(state: State, payload): void {
+      state.whereAmI = payload;
       Vue.delete(state.bus, 'arriveIn');
       Vue.delete(state.bus, 'errorMessage');
-      Vue.set(state.bus, 'direction', payload);
-      localStorage.busDirection = payload;
+      localStorage.whereAmI = payload;
     },
     setBusArriveIn(state: State, payload): void {
       Vue.delete(state.bus, 'errorMessage');
@@ -85,13 +85,17 @@ export default new Vuex.Store<State>({
     },
     setCountdownType(state: State, payload): void {
       Vue.set(state.countdown, 'type', payload);
-      Vue.set(state.countdown, 'started', false);
+      Vue.set(state.countdown, 'playback', 'STOP');
+      Vue.set(state.countdown, 'passed', 0);
     },
     setCountdownPassed(state: State, payload): void {
-      Vue.set(state.countdown, 'passed', payload)
+      Vue.set(state.countdown, 'passed', payload);
     },
-    controlCountdown(state: State, payload: 'START' | 'STOP'): void {
-      Vue.set(state.countdown, 'started', 'START' === payload);
+    controlCountdown(state: State, payload: 'START' | 'STOP' | 'PAUSE'): void {
+      Vue.set(state.countdown, 'playback', payload);
+      if ('STOP' === payload) {
+        Vue.set(state.countdown, 'passed', 0);
+      }
     },
   },
   actions: {
@@ -100,10 +104,10 @@ export default new Vuex.Store<State>({
         if (state.bus.enabled) {
           dispatch('getBusTime');
         }
-      }
+      };
       setInterval(getBusTime, 120 * 1000);
       getBusTime();
-      let link: any = window.top.document.querySelector("link[rel*='icon']");
+      let link: any = window.top.document.querySelector('link[rel*="icon"]');
       if (!link) {
         link = window.top.document.createElement('link');
         link.type = 'image/x-icon';
@@ -111,7 +115,8 @@ export default new Vuex.Store<State>({
         window.top.document.getElementsByTagName('head')[0].appendChild(link);
       }
       setInterval(() => {
-        if (state.countdown.started) {
+        const favicons = 'https://favicon-generator.org/favicon-generator/htdocs/favicons/2015-01-13/';
+        if ('START' === state.countdown.playback) {
           commit('setCountdownPassed', state.countdown.passed + 1);
           if (state.countdown.passed >= getters.countdownTarget) {
             dispatch('showNotify', `${state.countdown.type} timer!`);
@@ -119,11 +124,13 @@ export default new Vuex.Store<State>({
             commit('controlCountdown', 'STOP');
             commit('setCountdownType', 'WORK' === state.countdown.type ? 'BREAK' : 'WORK');
           }
-          link.href = 'https://favicon-generator.org/favicon-generator/htdocs/favicons/2015-01-13/83c32432b480c0f5dd4a664d73079134.ico';
-          window.top.document.title = getters.countdownWillEndAfter;
+          link.href = favicons + '83c32432b480c0f5dd4a664d73079134.ico';
+        } else if ('PAUSE' === state.countdown.playback) {
+          link.href = favicons + 'f86e790d31405a65eaaf5f4732e14967.ico';
         } else {
-          link.href = 'https://favicon-generator.org/favicon-generator/htdocs/favicons/2015-01-31/f86e790d31405a65eaaf5f4732e14967.ico';
+          link.href = favicons + '66e0f1e0443a5ee9eb45af51b3ca755a.ico';
         }
+        window.top.document.title = getters.countdownWillEndAfter;
       }, 1000);
     },
     async showNotify({ }, payload) {
@@ -131,12 +138,14 @@ export default new Vuex.Store<State>({
       const notification = new Notification(payload);
       setTimeout(() => notification.close(), 2000);
     },
-    setBusDirection({ state, dispatch }, payload) {
-      Vue.delete(state.bus, 'arriveIn');
-      Vue.delete(state.bus, 'errorMessage');
-      Vue.set(state.bus, 'direction', payload);
-      localStorage.busDirection = payload;
-      dispatch('getBusTime');
+    setWhereAmI({ commit, dispatch }, payload) {
+      commit('setWhereAmI', payload);
+      if ('HOME' === payload) {
+        commit('setBusEnabled', true);
+        dispatch('getBusTime');
+      } else {
+        commit('setBusEnabled', false);
+      }
     },
     setBusEnabled({ commit, dispatch }, payload) {
       if (payload) {
@@ -149,7 +158,7 @@ export default new Vuex.Store<State>({
       try {
         let targetBusStop: string = '';
         let url;
-        if ('DEAPRTURE' === state.bus.direction) {
+        if ('HOME' === state.whereAmI) {
           url = 'https://cors.io/?http://www.taiwanbus.tw/app_api/SP_PredictionTime_V3.ashx'
             + '?routeNo=1032&branch=0&goBack=1&Lang=&Source=w&runid=4948';
           targetBusStop = '南港車站';
@@ -165,7 +174,7 @@ export default new Vuex.Store<State>({
         const data = await response.json();
         let fromBusStop;
         let toBusStop;
-        if ('DEAPRTURE' === state.bus.direction) {
+        if ('HOME' === state.whereAmI) {
           [fromBusStop, toBusStop] = [37, 54];
         } else {
           [fromBusStop, toBusStop] = [14, 31];

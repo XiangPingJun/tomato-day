@@ -8,27 +8,16 @@ import { deaprtureBus, returnBus } from './busStop.mock';
 
 const busInfoBasic = {
   components: { BusInfo },
-  template: '<bus-info :bus="bus" @onDirectionChange="onDirectionChange" @onEnabledChange="onEnabledChange"/>',
+  template: '<bus-info :bus="bus" @onEnabledChange="onEnabledChange"/>',
   methods: {
-    onDirectionChange: action('onDirectionChange'),
     onEnabledChange: action('onEnabledChange'),
   }
 }
 storiesOf('BusInfo', module)
-  .add('deaprture direction', () => ({
+  .add('disabled', () => ({
     ...busInfoBasic,
     data: () => ({
       bus: {
-        direction: 'DEAPRTURE',
-        enabled: false,
-      }
-    }),
-  }))
-  .add('return direction', () => ({
-    ...busInfoBasic,
-    data: () => ({
-      bus: {
-        direction: 'RETURN',
         enabled: false,
       }
     }),
@@ -37,19 +26,29 @@ storiesOf('BusInfo', module)
     ...busInfoBasic,
     data: () => ({
       bus: {
-        direction: 'DEAPRTURE',
-        arriveIn: 10,
+        arriveIn: 12,
         busStopData: deaprtureBus,
         enabled: true,
       },
     }),
   }))
-  .add('arrive in 0 minutes', () => ({
+  .add('arrive in 9 minutes', () => ({
     ...busInfoBasic,
-    template: '<bus-info :bus="bus" :busArrivingSoon="busArrivingSoon" @onDirectionChange="onDirectionChange"/>',
+    template: '<bus-info :bus="bus" :busArrivingSoon="busArrivingSoon"/>',
     data: () => ({
       bus: {
-        direction: 'RETURN',
+        arriveIn: 9,
+        busStopData: deaprtureBus,
+        enabled: true,
+      },
+      busArrivingSoon: true,
+    }),
+  }))
+  .add('arrive in 0 minutes', () => ({
+    ...busInfoBasic,
+    template: '<bus-info :bus="bus" :busArrivingSoon="busArrivingSoon"/>',
+    data: () => ({
+      bus: {
         arriveIn: 0,
         busStopData: returnBus,
         enabled: true,
@@ -61,12 +60,8 @@ storiesOf('BusInfo', module)
     ...busInfoBasic,
     data: () => ({
       bus: {
-        direction: 'DEAPRTURE',
         errorMessage: 'Unable to get bus info!',
         enabled: true,
       }
     }),
   }))
-
-
-/* eslint-enable react/react-in-jsx-scope */

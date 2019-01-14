@@ -4,7 +4,6 @@ import { storiesOf } from '@storybook/vue';
 import { action } from '@storybook/addon-actions';
 import { linkTo } from '@storybook/addon-links';
 import Countdown from '../src/components/Countdown.vue';
-import { deaprtureBus, returnBus } from './busStop.mock';
 
 const countdownBasic = {
   components: { Countdown },
@@ -20,7 +19,7 @@ storiesOf('Countdown', module)
     data: () => ({
       countdown: {
         passed: 0,
-        started: false,
+        playback: 'STOP',
         type: 'WORK',
       },
       countdownWillEndAfter: '25:00',
@@ -31,7 +30,7 @@ storiesOf('Countdown', module)
     data: () => ({
       countdown: {
         passed: 0,
-        started: false,
+        playback: 'STOP',
         type: 'BREAK',
       },
       countdownWillEndAfter: '10:00',
@@ -42,22 +41,20 @@ storiesOf('Countdown', module)
     data: () => ({
       countdown: {
         passed: 0,
-        started: true,
+        playback: 'START',
         type: 'WORK',
       },
       countdownWillEndAfter: '23:53',
     }),
   }))
-  .add('break started', () => ({
+  .add('break paused', () => ({
     ...countdownBasic,
     data: () => ({
       countdown: {
         passed: 0,
-        started: true,
-        type: 'WORK',
+        playback: 'PAUSE',
+        type: 'BREAK',
       },
       countdownWillEndAfter: '03:35',
     }),
   }))
-
-/* eslint-enable react/react-in-jsx-scope */

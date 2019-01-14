@@ -13,21 +13,16 @@
           <input type="radio" v-model="typeModel" value="BREAK">
           <i class="form-icon"></i> Break
         </label>
-        <h2>{{countdownWillEndAfter}}</h2>
-        <button
-          v-if="!countdown.started"
-          class="btn"
-          @click="$emit('onControlCountdown','START')"
-        >▶ 開始</button>
-        <button
-          v-if="countdown.started"
-          class="btn"
-          @click="$emit('onControlCountdown','STOP')"
-        >■ 停止</button>
-        <!--❚❚ 暫停-->
+      </div>
+      <h2>{{countdownWillEndAfter}}</h2>
+      <div v-if="'START'==countdown.playback" class="form-group">
+        <button class="btn" @click="$emit('onControlCountdown','PAUSE')">❚❚ Pause</button>
+        <button class="btn" @click="$emit('onControlCountdown','STOP')">■ Stop</button>
+      </div>
+      <div v-else class="form-group">
+        <button class="btn" @click="$emit('onControlCountdown','START')">▶ Start</button>
       </div>
     </div>
-    <div class="card-footer"></div>
   </div>
 </template>
 
@@ -51,9 +46,9 @@ export default {
     countdown: {
       deep: true,
       handler(value, oldValue) {
-        this.typeModel = value.type
+        this.typeModel = value.type;
       },
-    }
+    },
   },
 };
 </script>
