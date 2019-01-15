@@ -15,11 +15,11 @@
         </label>
       </div>
       <h2>{{countdownWillEndAfter}}</h2>
-      <div v-if="'START'==countdown.playback" class="form-group">
+      <div v-if="'START'===countdown.playback" class="btn-group btn-group-block">
         <button class="btn" @click="$emit('onControlCountdown','PAUSE')">❚❚ Pause</button>
         <button class="btn" @click="$emit('onControlCountdown','STOP')">■ Stop</button>
       </div>
-      <div v-else class="form-group">
+      <div v-else class="btn-group btn-group-block">
         <button class="btn" @click="$emit('onControlCountdown','START')">▶ Start</button>
       </div>
     </div>
@@ -35,9 +35,22 @@ export default {
   data() {
     return {
       typeModel: this.countdown.type,
+      spaceKeyListener: (event) => {
+        if (32 === event.keyCode) {
+          if ('START' === this.countdown.playback) {
+            this.$emit('onControlCountdown', 'PAUSE');
+          } else {
+            this.$emit('onControlCountdown', 'START');
+          }
+        }
+      }
     };
   },
-  computed: {
+  created() {
+    document.addEventListener("keypress", this.spaceKeyListener);
+  },
+  beforeDestroy() {
+    document.removeEventListener("keypress", this.spaceKeyListener);
   },
   watch: {
     typeModel(value, oldValue) {

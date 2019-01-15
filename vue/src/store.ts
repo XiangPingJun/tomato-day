@@ -109,15 +109,14 @@ export default new Vuex.Store<State>({
       };
       setInterval(getBusTime, 120 * 1000);
       getBusTime();
-      let link: any = window.top.document.querySelector('link[rel*="icon"]');
+      let link: any = document.querySelector('link[rel*="icon"]');
       if (!link) {
-        link = window.top.document.createElement('link');
+        link = document.createElement('link');
         link.type = 'image/x-icon';
         link.rel = 'shortcut icon';
-        window.top.document.getElementsByTagName('head')[0].appendChild(link);
+        document.getElementsByTagName('head')[0].appendChild(link);
       }
       setInterval(() => {
-        const favicons = 'https://favicon-generator.org/favicon-generator/htdocs/favicons/2015-01-13/';
         if ('START' === state.countdown.playback) {
           commit('setCountdownPassed', state.countdown.passed + 1);
           if (state.countdown.passed >= getters.countdownTarget) {
@@ -126,19 +125,19 @@ export default new Vuex.Store<State>({
             commit('controlCountdown', 'STOP');
             commit('setCountdownType', 'WORK' === state.countdown.type ? 'BREAK' : 'WORK');
           }
-          link.href = favicons + '83c32432b480c0f5dd4a664d73079134.ico';
-        } else if ('PAUSE' === state.countdown.playback) {
-          link.href = favicons + 'f86e790d31405a65eaaf5f4732e14967.ico';
-        } else {
-          link.href = favicons + '66e0f1e0443a5ee9eb45af51b3ca755a.ico';
         }
-        window.top.document.title = getters.countdownWillEndAfter;
+        link.href = state.countdown.playback.toLowerCase() + '.ico';
+        document.title = getters.countdownWillEndAfter;
       }, 1000);
     },
-    async showNotify({ }, payload) {
+    async showNotify({ state }, payload) {
       await Notification.requestPermission();
       const notification = new Notification(payload);
-      setTimeout(() => notification.close(), 2000);
+      if ('HOME' === state.whereAmI) {
+        setTimeout(() => notification.close(), 2000);
+      } else {
+        (new Audio('./snap.mp3')).play();
+      }
     },
     setWhereAmI({ commit, dispatch }, payload) {
       commit('setWhereAmI', payload);
