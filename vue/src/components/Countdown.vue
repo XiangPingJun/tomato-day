@@ -36,12 +36,10 @@ export default {
     return {
       typeModel: this.countdown.type,
       spaceKeyListener: (event) => {
-        if (32 === event.keyCode) {
-          if ('START' === this.countdown.playback) {
-            this.$emit('onControlCountdown', 'PAUSE');
-          } else {
-            this.$emit('onControlCountdown', 'START');
-          }
+        if ('START' === this.countdown.playback) {
+          this.$emit('onControlCountdown', 'PAUSE');
+        } else {
+          this.$emit('onControlCountdown', 'START');
         }
       }
     };
