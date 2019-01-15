@@ -41,14 +41,14 @@ export default {
         } else {
           this.$emit('onControlCountdown', 'START');
         }
-      }
+      },
     };
   },
   created() {
-    document.addEventListener("keypress", this.spaceKeyListener);
+    document.addEventListener('keypress', this.spaceKeyListener);
   },
   beforeDestroy() {
-    document.removeEventListener("keypress", this.spaceKeyListener);
+    document.removeEventListener('keypress', this.spaceKeyListener);
   },
   watch: {
     typeModel(value, oldValue) {
