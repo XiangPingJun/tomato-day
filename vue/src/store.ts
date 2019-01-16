@@ -14,7 +14,7 @@ interface BusStop {
   predictionTime: string;
 }
 interface CountdownState {
-  type: 'WORK' | 'BREAK';
+  type: 'WORK' | 'SHORT_BREAK' | 'LONG_BREAK';
   playback: 'START' | 'STOP' | 'PAUSE';
   passed: number;
 }
@@ -59,7 +59,11 @@ export default new Vuex.Store<State>({
       }
     },
     countdownTarget(state: State): number {
-      return 'WORK' === state.countdown.type ? 25 * 60 : 10 * 60;
+      switch (state.countdown.type) {
+        case 'WORK': return 25 * 60;
+        case 'SHORT_BREAK': return 5 * 60;
+        case 'LONG_BREAK': return 15 * 60;
+      }
     },
   },
   mutations: {
@@ -107,7 +111,7 @@ export default new Vuex.Store<State>({
           dispatch('getBusTime');
         }
       };
-      setInterval(getBusTime, 120 * 1000);
+      setInterval(getBusTime, 90 * 1000);
       getBusTime();
       let link: any = document.querySelector('link[rel*="icon"]');
       if (!link) {
@@ -123,7 +127,7 @@ export default new Vuex.Store<State>({
             dispatch('showNotify', `${state.countdown.type} timer!`);
             commit('setCountdownPassed', 0);
             commit('controlCountdown', 'STOP');
-            commit('setCountdownType', 'WORK' === state.countdown.type ? 'BREAK' : 'WORK');
+            commit('setCountdownType', 'WORK' === state.countdown.type ? 'SHORT_BREAK' : 'WORK');
           }
         }
         link.href = state.countdown.playback.toLowerCase() + '.ico';

@@ -10,17 +10,33 @@
           <i class="form-icon"></i> Work
         </label>
         <label class="form-radio form-inline">
-          <input type="radio" v-model="typeModel" value="BREAK">
-          <i class="form-icon"></i> Break
+          <input type="radio" v-model="typeModel" value="SHORT_BREAK">
+          <i class="form-icon"></i> Short Break
+        </label>
+        <label class="form-radio form-inline">
+          <input type="radio" v-model="typeModel" value="LONG_BREAK">
+          <i class="form-icon"></i> Long Break
         </label>
       </div>
       <h2>{{countdownWillEndAfter}}</h2>
       <div v-if="'START'===countdown.playback" class="btn-group btn-group-block">
-        <button class="btn" @click="$emit('onControlCountdown','PAUSE')">❚❚ Pause</button>
-        <button class="btn" @click="$emit('onControlCountdown','STOP')">■ Stop</button>
+        <button
+          class="btn"
+          @click="$emit('onControlCountdown','PAUSE');"
+          onclick="this.blur();"
+        >❚❚ Pause</button>
+        <button
+          class="btn"
+          @click="$emit('onControlCountdown','STOP');"
+          onclick="this.blur();"
+        >■ Stop</button>
       </div>
       <div v-else class="btn-group btn-group-block">
-        <button class="btn" @click="$emit('onControlCountdown','START')">▶ Start</button>
+        <button
+          class="btn"
+          @click="$emit('onControlCountdown','START');"
+          onclick="this.blur();"
+        >▶ Start</button>
       </div>
     </div>
   </div>

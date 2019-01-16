@@ -25,13 +25,24 @@ storiesOf('Countdown', module)
       countdownWillEndAfter: '25:00',
     }),
   }))
-  .add('break stop', () => ({
+  .add('short break stop', () => ({
     ...countdownBasic,
     data: () => ({
       countdown: {
         passed: 0,
         playback: 'STOP',
-        type: 'BREAK',
+        type: 'SHORT_BREAK',
+      },
+      countdownWillEndAfter: '10:00',
+    }),
+  }))
+  .add('long break stop', () => ({
+    ...countdownBasic,
+    data: () => ({
+      countdown: {
+        passed: 0,
+        playback: 'STOP',
+        type: 'LONG_BREAK',
       },
       countdownWillEndAfter: '10:00',
     }),
@@ -47,13 +58,24 @@ storiesOf('Countdown', module)
       countdownWillEndAfter: '23:53',
     }),
   }))
-  .add('break paused', () => ({
+  .add('short break paused', () => ({
     ...countdownBasic,
     data: () => ({
       countdown: {
         passed: 0,
         playback: 'PAUSE',
-        type: 'BREAK',
+        type: 'SHORT_BREAK',
+      },
+      countdownWillEndAfter: '03:35',
+    }),
+  }))
+  .add('long break paused', () => ({
+    ...countdownBasic,
+    data: () => ({
+      countdown: {
+        passed: 0,
+        playback: 'PAUSE',
+        type: 'LONG_BREAK',
       },
       countdownWillEndAfter: '03:35',
     }),
