@@ -1,6 +1,33 @@
 {
+  "name": "vue-tomato-day",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
+  },
   "dependencies": {
-    "request": "^2.88.0",
-    "request-promise-native": "^1.0.5"
+    "vue": "^2.5.17",
+    "vue-class-component": "^6.0.0",
+    "vue-property-decorator": "^7.0.0",
+    "vuex": "^3.0.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.2.2",
+    "@storybook/addon-actions": "^4.1.4",
+    "@storybook/addon-links": "^4.1.4",
+    "@storybook/addons": "^4.1.4",
+    "@storybook/vue": "^4.1.4",
+    "@vue/cli-plugin-babel": "^3.2.0",
+    "@vue/cli-plugin-typescript": "^3.2.0",
+    "@vue/cli-service": "^3.2.0",
+    "awesome-typescript-loader": "^5.2.1",
+    "babel-loader": "^8.0.4",
+    "babel-preset-vue": "^2.0.2",
+    "typescript": "^3.0.0",
+    "vue-template-compiler": "^2.5.17"
   }
 }

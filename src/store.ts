@@ -164,8 +164,8 @@ export default new Vuex.Store<State>({
         let targetBusStop: string = '';
         let url;
         if ('HOME' === state.whereAmI) {
-          url = 'https://jsonp.afeld.me/?url=http%3A%2F%2Fwww.taiwanbus.tw%2Fapp_api%2FSP_PredictionTime_V3.ashx'
-            + '%3FrouteNo%3D1032%26branch%3D0%26goBack%3D2%26Lang%3D%26Source%3Dw%26runid%3D4948';
+          url = '//jsonp.afeld.me/?url=https%3A%2F%2Fwww.taiwanbus.tw%2Fapp_api%2FSP_PredictionTime_V3.ashx'
+            + '%3FrouteNo%3D1032%26branch%3D0%26goBack%3D1%26Lang%3D%26Source%3Dw%26runid%3D4948';
           targetBusStop = '南港車站';
         } else {
           url = '//jsonp.afeld.me/?url=http%3A%2F%2Fwww.taiwanbus.tw%2Fapp_api%2FSP_PredictionTime_V3.ashx'
