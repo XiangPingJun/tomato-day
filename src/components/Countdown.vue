@@ -6,15 +6,15 @@
     <div class="card-body">
       <div class="form-group">
         <label class="form-radio form-inline">
-          <input type="radio" v-model="typeModel" value="WORK">
+          <input type="radio" v-model="typeModel" value="WORK" />
           <i class="form-icon"></i> Work
         </label>
         <label class="form-radio form-inline">
-          <input type="radio" v-model="typeModel" value="SHORT_BREAK">
+          <input type="radio" v-model="typeModel" value="SHORT_BREAK" />
           <i class="form-icon"></i> Short Break
         </label>
         <label class="form-radio form-inline">
-          <input type="radio" v-model="typeModel" value="LONG_BREAK">
+          <input type="radio" v-model="typeModel" value="LONG_BREAK" />
           <i class="form-icon"></i> Long Break
         </label>
       </div>
@@ -52,6 +52,9 @@ export default {
     return {
       typeModel: this.countdown.type,
       spaceKeyListener: (event) => {
+        if (' ' !== event.key) {
+          return;
+        }
         if ('START' === this.countdown.playback) {
           this.$emit('onControlCountdown', 'PAUSE');
         } else {

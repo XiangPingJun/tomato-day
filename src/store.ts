@@ -65,6 +65,9 @@ export default new Vuex.Store<State>({
         case 'LONG_BREAK': return 15 * 60;
       }
     },
+    skipUntil(state: State): string {
+      return 'OFFICE' === state.whereAmI ? '18:00' : '08:50';
+    },
   },
   mutations: {
     setWhereAmI(state: State, payload): void {
@@ -139,9 +142,8 @@ export default new Vuex.Store<State>({
       const notification = new Notification(payload);
       if ('HOME' === state.whereAmI) {
         setTimeout(() => notification.close(), 2000);
-      } else {
-        (new Audio('./snap.mp3')).play();
       }
+      (new Audio('./snap.mp3')).play();
     },
     setWhereAmI({ commit, dispatch }, payload) {
       commit('setWhereAmI', payload);
@@ -164,11 +166,11 @@ export default new Vuex.Store<State>({
         let targetBusStop: string = '';
         let url;
         if ('HOME' === state.whereAmI) {
-          url = '//jsonp.afeld.me/?url=https%3A%2F%2Fwww.taiwanbus.tw%2Fapp_api%2FSP_PredictionTime_V3.ashx'
+          url = 'https://jsonp.afeld.me/?url=http%3A%2F%2Fwww.taiwanbus.tw%2Fapp_api%2FSP_PredictionTime_V3.ashx'
             + '%3FrouteNo%3D1032%26branch%3D0%26goBack%3D1%26Lang%3D%26Source%3Dw%26runid%3D4948';
           targetBusStop = '南港車站';
         } else {
-          url = '//jsonp.afeld.me/?url=http%3A%2F%2Fwww.taiwanbus.tw%2Fapp_api%2FSP_PredictionTime_V3.ashx'
+          url = 'https://jsonp.afeld.me/?url=http%3A%2F%2Fwww.taiwanbus.tw%2Fapp_api%2FSP_PredictionTime_V3.ashx'
             + '%3FrouteNo%3D1032%26branch%3D0%26goBack%3D2%26Lang%3D%26Source%3Dw%26runid%3D4949';
           targetBusStop = '和平高中';
         }
@@ -202,7 +204,9 @@ export default new Vuex.Store<State>({
           throw new Error('Unable to parse predictionTime: ' + predictionTime);
         }
         commit('setBusArriveIn', arriveIn);
-        if (getters.busArrivingSoon) {
+        const now = (new Date()).getHours() * 100 + (new Date()).getMinutes();
+        const skipUntil = parseInt(getters.skipUntil.replace(':', ''), 10);
+        if (getters.busArrivingSoon && now > skipUntil) {
           dispatch('showNotify', arriveIn);
         }
       } catch (e) {

@@ -1,14 +1,19 @@
 <template>
-  <bus-info :bus="bus" :busArrivingSoon="busArrivingSoon" @onEnabledChange="setBusEnabled"/>
+  <bus-info
+    :bus="bus"
+    :busArrivingSoon="busArrivingSoon"
+    :skipUntil="skipUntil"
+    @onEnabledChange="setBusEnabled"
+  />
 </template>
 
 <script>
 import BusInfo from '../components/BusInfo.vue';
-import { mapActions, mapState, mapMutations, mapGetters } from 'vuex';
+import { mapActions, mapState, mapGetters } from 'vuex';
 
 export default {
   components: { BusInfo },
-  computed: { ...mapState(['bus']), ...mapGetters(['busArrivingSoon']) },
+  computed: { ...mapState(['bus']), ...mapGetters(['busArrivingSoon', 'skipUntil']) },
   methods: { ...mapActions(['setBusEnabled']) },
 };
 </script>

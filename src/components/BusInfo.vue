@@ -1,13 +1,15 @@
 <template>
   <div class="card">
     <div class="card-header">
-      <div class="card-title h5">1032 Bus Info</div>
+      <div class="card-title h5 title">
+        <div class="text">1032 Bus Info (Skip until {{skipUntil}})</div>
+      </div>
       <div class="card-subtitle text-gray"></div>
     </div>
     <div class="card-body">
       <div class="form-group">
         <label class="form-checkbox">
-          <input type="checkbox" v-model="enabledModel">
+          <input type="checkbox" v-model="enabledModel" />
           <i class="form-icon"></i> Enable tracking
         </label>
       </div>
@@ -36,6 +38,7 @@ export default {
   props: {
     bus: { type: Object, required: true },
     busArrivingSoon: { type: Boolean, required: false },
+    skipUntil: { type: String, required: true },
   },
   data() {
     return {
