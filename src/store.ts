@@ -200,7 +200,7 @@ export default new Vuex.Store<State>({
         match = /(\d+)分/.exec(predictionTime);
         if (match instanceof Array) {
           arriveIn += parseInt(match[1], 10);
-        } else if (/\d+:\d+/.exec(predictionTime) && '進站中' !== predictionTime && '即將進站' !== predictionTime) {
+        } else if (!/\d+:\d+/.exec(predictionTime) && '進站中' !== predictionTime && '即將進站' !== predictionTime) {
           throw new Error('Unable to parse predictionTime: ' + predictionTime);
         }
         commit('setBusArriveIn', arriveIn);
