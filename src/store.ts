@@ -66,7 +66,7 @@ export default new Vuex.Store<State>({
       }
     },
     skipUntil(state: State): string {
-      return 'OFFICE' === state.whereAmI ? '18:00' : '08:50';
+      return 'OFFICE' === state.whereAmI ? '18:10' : '09:10';
     },
   },
   mutations: {
